@@ -4,7 +4,7 @@ import { ArticleDto } from './article.dto';
 
 @Injectable()
 export class ArticlesService {
-  private lastArticleId = 0;
+  private nextCreatedArticleId = 1;
   private articles: Article[] = [];
 
   getAll() {
@@ -36,7 +36,7 @@ export class ArticlesService {
 
   create(article: ArticleDto) {
     const newArticle = {
-      id: ++this.lastArticleId,
+      id: this.nextCreatedArticleId++,
       ...article,
     };
     this.articles.push(newArticle);
