@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateArticleDto } from './dto/create-article.dto';
-import { UpdateArticleDto } from './dto/update-article.dto';
 import { Article } from './article';
+import { ArticleDto } from './article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -20,18 +19,22 @@ export class ArticlesService {
     throw new NotFoundException();
   }
 
-  update(id: number, article: UpdateArticleDto) {
+  update(id: number, article: ArticleDto) {
     const articleIndex = this.articles.findIndex(
       (article) => article.id === id,
     );
     if (articleIndex === -1) {
       throw new NotFoundException();
     }
-    this.articles[articleIndex] = article;
+    this.articles[articleIndex] = {
+      ...this.articles[articleIndex],
+      title: article.title,
+      content: article.content,
+    };
     return article;
   }
 
-  create(article: CreateArticleDto) {
+  create(article: ArticleDto) {
     const newArticle = {
       id: ++this.lastArticleId,
       ...article,
