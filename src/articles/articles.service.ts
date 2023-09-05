@@ -1,55 +1,72 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Article } from './article';
+import { PrismaService } from '../database/prisma.service';
 import { ArticleDto } from './article.dto';
+import { Prisma } from '@prisma/client';
+import { PrismaError } from '../database/prisma-error.enum';
 
 @Injectable()
 export class ArticlesService {
-  private nextCreatedArticleId = 1;
-  private articles: Article[] = [];
+  constructor(private readonly prismaService: PrismaService) {}
 
   getAll() {
-    return this.articles;
+    return this.prismaService.article.findMany();
   }
 
-  getById(id: number) {
-    const article = this.articles.find((article) => article.id === id);
-    if (article) {
-      return article;
-    }
-    throw new NotFoundException();
-  }
-
-  update(id: number, article: ArticleDto) {
-    const articleIndex = this.articles.findIndex(
-      (article) => article.id === id,
-    );
-    if (articleIndex === -1) {
+  async getById(id: number) {
+    const article = await this.prismaService.article.findUnique({
+      where: {
+        id,
+      },
+    });
+    if (!article) {
       throw new NotFoundException();
     }
-    this.articles[articleIndex] = {
-      ...this.articles[articleIndex],
-      title: article.title,
-      content: article.content,
-    };
     return article;
   }
 
   create(article: ArticleDto) {
-    const newArticle = {
-      id: this.nextCreatedArticleId++,
-      ...article,
-    };
-    this.articles.push(newArticle);
-    return newArticle;
+    return this.prismaService.article.create({
+      data: article,
+    });
   }
 
-  delete(id: number) {
-    const articleIndex = this.articles.findIndex(
-      (article) => article.id === id,
-    );
-    if (articleIndex === -1) {
-      throw new NotFoundException();
+  async update(id: number, article: ArticleDto) {
+    try {
+      return await this.prismaService.article.update({
+        data: {
+          ...article,
+          id: undefined,
+        },
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === PrismaError.RecordDoesNotExist
+      ) {
+        throw new NotFoundException();
+      }
+      throw error;
     }
-    this.articles.splice(articleIndex, 1);
+  }
+
+  async delete(id: number) {
+    try {
+      return await this.prismaService.article.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === PrismaError.RecordDoesNotExist
+      ) {
+        throw new NotFoundException();
+      }
+      throw error;
+    }
   }
 }
