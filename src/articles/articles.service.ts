@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { ArticleDto } from './article.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaError } from '../database/prisma-error.enum';
+import { ArticleNotFoundException } from './article-not-found.exception';
 
 @Injectable()
 export class ArticlesService {
@@ -19,7 +20,7 @@ export class ArticlesService {
       },
     });
     if (!article) {
-      throw new NotFoundException();
+      throw new ArticleNotFoundException(id);
     }
     return article;
   }
@@ -46,7 +47,7 @@ export class ArticlesService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === PrismaError.RecordDoesNotExist
       ) {
-        throw new NotFoundException();
+        throw new ArticleNotFoundException(id);
       }
       throw error;
     }
@@ -64,7 +65,7 @@ export class ArticlesService {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === PrismaError.RecordDoesNotExist
       ) {
-        throw new NotFoundException();
+        throw new ArticleNotFoundException(id);
       }
       throw error;
     }
