@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
-import { ArticleDto } from './article.dto';
+import { CreateArticleDto } from './dto/create-article.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaError } from '../database/prisma-error.enum';
 import { ArticleNotFoundException } from './article-not-found.exception';
@@ -25,13 +25,13 @@ export class ArticlesService {
     return article;
   }
 
-  create(article: ArticleDto) {
+  create(article: CreateArticleDto) {
     return this.prismaService.article.create({
       data: article,
     });
   }
 
-  async update(id: number, article: ArticleDto) {
+  async update(id: number, article: CreateArticleDto) {
     try {
       return await this.prismaService.article.update({
         data: {
