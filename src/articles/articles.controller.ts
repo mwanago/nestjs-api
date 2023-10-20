@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ArticlesService } from './articles.service';
 import { CreateArticleDto } from './dto/create-article.dto';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Controller('articles')
 export default class ArticlesController {
@@ -33,7 +34,7 @@ export default class ArticlesController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() article: CreateArticleDto,
+    @Body() article: UpdateArticleDto,
   ) {
     return this.articlesService.update(id, article);
   }

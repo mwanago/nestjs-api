@@ -4,6 +4,7 @@ import { CreateArticleDto } from './dto/create-article.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaError } from '../database/prisma-error.enum';
 import { ArticleNotFoundException } from './article-not-found.exception';
+import { UpdateArticleDto } from './dto/update-article.dto';
 
 @Injectable()
 export class ArticlesService {
@@ -31,7 +32,7 @@ export class ArticlesService {
     });
   }
 
-  async update(id: number, article: CreateArticleDto) {
+  async update(id: number, article: UpdateArticleDto) {
     try {
       return await this.prismaService.article.update({
         data: {
