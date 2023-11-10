@@ -1,0 +1,1 @@
+ALTER TABLE "Article" RENAME "content" TO "text";

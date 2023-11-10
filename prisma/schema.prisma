@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Article {
-  id      Int     @id @default(autoincrement())
-  title   String
-  content String?
+  id    Int     @id @default(autoincrement())
+  title String
+  text  String?
 }
