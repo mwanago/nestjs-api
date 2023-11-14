@@ -3,9 +3,9 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { WrongCredentialsException } from './wrong-credentials-exception';
-import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { LogInDto } from './dto/log-in.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -48,9 +48,9 @@ export class AuthenticationService {
     }
   }
 
-  async getAuthenticatedUser(signInData: SignInDto) {
-    const user = await this.getUserByEmail(signInData.email);
-    await this.verifyPassword(signInData.password, user.password);
+  async getAuthenticatedUser(logInData: LogInDto) {
+    const user = await this.getUserByEmail(logInData.email);
+    await this.verifyPassword(logInData.password, user.password);
     return user;
   }
 

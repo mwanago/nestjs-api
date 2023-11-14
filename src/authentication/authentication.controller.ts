@@ -1,7 +1,7 @@
 import { Body, Controller, HttpCode, Post, Res } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
+import { LogInDto } from './dto/log-in.dto';
 import { Response } from 'express';
 
 @Controller('authentication')
@@ -14,13 +14,13 @@ export class AuthenticationController {
   }
 
   @HttpCode(200)
-  @Post('sign-in')
+  @Post('log-in')
   async logIn(
-    @Body() signInData: SignInDto,
+    @Body() logInData: LogInDto,
     @Res({ passthrough: true }) response: Response,
   ) {
     const user =
-      await this.authenticationService.getAuthenticatedUser(signInData);
+      await this.authenticationService.getAuthenticatedUser(logInData);
     const cookie = this.authenticationService.getCookieWithJwtToken(user.id);
     response.setHeader('Set-Cookie', cookie);
     return user;
