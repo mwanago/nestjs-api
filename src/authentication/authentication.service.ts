@@ -3,6 +3,7 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { WrongCredentialsException } from './wrong-credentials-exception';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Injectable()
 export class AuthenticationService {
@@ -41,9 +42,9 @@ export class AuthenticationService {
     }
   }
 
-  public async getAuthenticatedUser(email: string, plainTextPassword: string) {
-    const user = await this.getUserByEmail(email);
-    await this.verifyPassword(plainTextPassword, user.password);
+  public async getAuthenticatedUser(signInData: SignInDto) {
+    const user = await this.getUserByEmail(signInData.email);
+    await this.verifyPassword(signInData.password, user.password);
     return user;
   }
 }
