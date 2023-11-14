@@ -6,6 +6,7 @@ import { WrongCredentialsException } from './wrong-credentials-exception';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LogInDto } from './dto/log-in.dto';
+import { TokenPayload } from './token-payload.interface';
 
 @Injectable()
 export class AuthenticationService {
