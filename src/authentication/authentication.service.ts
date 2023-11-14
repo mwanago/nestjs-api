@@ -1,11 +1,8 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
+import { WrongCredentialsException } from './wrong-credentials-exception';
 
 @Injectable()
 export class AuthenticationService {
@@ -29,7 +26,7 @@ export class AuthenticationService {
       hashedPassword,
     );
     if (!isPasswordMatching) {
-      throw new BadRequestException('Wrong credentials provided');
+      throw new WrongCredentialsException();
     }
   }
 
@@ -38,7 +35,7 @@ export class AuthenticationService {
       return await this.usersService.getByEmail(email);
     } catch (error) {
       if (error instanceof NotFoundException) {
-        throw new BadRequestException('Wrong credentials provided');
+        throw new WrongCredentialsException();
       }
       throw error;
     }
