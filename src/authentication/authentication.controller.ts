@@ -9,7 +9,7 @@ export class AuthenticationController {
   constructor(private readonly authenticationService: AuthenticationService) {}
 
   @Post('sign-up')
-  async register(@Body() signUpData: SignUpDto) {
+  async signUp(@Body() signUpData: SignUpDto) {
     return this.authenticationService.signUp(signUpData);
   }
 
@@ -24,5 +24,12 @@ export class AuthenticationController {
     const cookie = this.authenticationService.getCookieWithJwtToken(user.id);
     response.setHeader('Set-Cookie', cookie);
     return user;
+  }
+
+  @HttpCode(200)
+  @Post('log-out')
+  async logOut(@Res({ passthrough: true }) response: Response) {
+    const cookie = this.authenticationService.getCookieForLogOut();
+    response.setHeader('Set-Cookie', cookie);
   }
 }
