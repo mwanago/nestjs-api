@@ -21,6 +21,7 @@ export class AuthenticationService {
     return this.usersService.create({
       name: signUpData.name,
       email: signUpData.email,
+      phoneNumber: signUpData.phoneNumber,
       password: hashedPassword,
     });
   }
