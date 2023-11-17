@@ -23,7 +23,7 @@ export class AuthenticationController {
 
   @Post('sign-up')
   @TransformPlainToInstance(AuthenticationResponseDto)
-  async signUp(@Body() signUpData: SignUpDto) {
+  signUp(@Body() signUpData: SignUpDto) {
     return this.authenticationService.signUp(signUpData);
   }
 
