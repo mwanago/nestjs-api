@@ -31,7 +31,11 @@ export class ArticlesService {
       data: {
         title: article.title,
         text: article.text,
-        authorId,
+        author: {
+          connect: {
+            id: authorId,
+          },
+        },
       },
     });
   }
