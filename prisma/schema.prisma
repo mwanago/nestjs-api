@@ -7,12 +7,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  articles Article[]
+}
+
 model Article {
-  id       Int     @id @default(autoincrement())
-  title    String
-  text     String?
-  author   User    @relation(fields: [authorId], references: [id])
-  authorId Int
+  id         Int        @id @default(autoincrement())
+  title      String
+  text       String?
+  author     User       @relation(fields: [authorId], references: [id])
+  authorId   Int
+  categories Category[]
 }
 
 model Address {
