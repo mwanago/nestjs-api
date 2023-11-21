@@ -8,9 +8,11 @@ datasource db {
 }
 
 model Article {
-  id    Int     @id @default(autoincrement())
-  title String
-  text  String?
+  id       Int     @id @default(autoincrement())
+  title    String
+  text     String?
+  author   User    @relation(fields: [authorId], references: [id])
+  authorId Int
 }
 
 model Address {
@@ -22,11 +24,12 @@ model Address {
 }
 
 model User {
-  id          Int      @id @default(autoincrement())
-  email       String   @unique
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
   name        String
   password    String
   phoneNumber String?
-  address     Address? @relation(fields: [addressId], references: [id])
-  addressId   Int?     @unique
+  address     Address?  @relation(fields: [addressId], references: [id])
+  addressId   Int?      @unique
+  articles    Article[]
 }
