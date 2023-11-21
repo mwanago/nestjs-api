@@ -17,6 +17,9 @@ export class UsersService {
       where: {
         email,
       },
+      include: {
+        address: true,
+      },
     });
     if (!user) {
       throw new NotFoundException();
@@ -29,6 +32,9 @@ export class UsersService {
     const user = await this.prismaService.user.findUnique({
       where: {
         id,
+      },
+      include: {
+        address: true,
       },
     });
     if (!user) {
@@ -49,6 +55,9 @@ export class UsersService {
           address: {
             create: user.address,
           },
+        },
+        include: {
+          address: true,
         },
       });
     } catch (error) {
