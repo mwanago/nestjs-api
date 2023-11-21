@@ -18,4 +18,6 @@ export class AuthenticationResponseDto implements User {
 
   @Exclude()
   password: string;
+
+  addressId: number;
 }

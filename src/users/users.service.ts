@@ -40,8 +40,16 @@ export class UsersService {
 
   async create(user: UserDto) {
     try {
-      return this.prismaService.user.create({
-        data: user,
+      return await this.prismaService.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          password: user.password,
+          phoneNumber: user.phoneNumber,
+          address: {
+            create: user.address,
+          },
+        },
       });
     } catch (error) {
       if (
