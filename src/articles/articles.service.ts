@@ -27,6 +27,12 @@ export class ArticlesService {
   }
 
   create(article: CreateArticleDto, authorId: number) {
+    const categories = article.categoryIds?.map((id) => {
+      return {
+        id,
+      };
+    });
+
     return this.prismaService.article.create({
       data: {
         title: article.title,
@@ -36,6 +42,12 @@ export class ArticlesService {
             id: authorId,
           },
         },
+        categories: {
+          connect: categories,
+        },
+      },
+      include: {
+        categories: true,
       },
     });
   }

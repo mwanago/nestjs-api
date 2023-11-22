@@ -1,4 +1,5 @@
-import { IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import { CanBeUndefined } from '../../utilities/can-be-undefined';
 
 export class CreateArticleDto {
   @IsString()
@@ -9,4 +10,8 @@ export class CreateArticleDto {
   @IsString()
   @IsNotEmpty()
   title: string;
+
+  @CanBeUndefined()
+  @IsNumber({}, { each: true })
+  categoryIds?: number[];
 }
