@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { Prisma } from '@prisma/client';
@@ -26,30 +26,40 @@ export class ArticlesService {
     return article;
   }
 
-  create(article: CreateArticleDto, authorId: number) {
+  async create(article: CreateArticleDto, authorId: number) {
     const categories = article.categoryIds?.map((id) => {
       return {
         id,
       };
     });
 
-    return this.prismaService.article.create({
-      data: {
-        title: article.title,
-        text: article.text,
-        author: {
-          connect: {
-            id: authorId,
+    try {
+      return await this.prismaService.article.create({
+        data: {
+          title: article.title,
+          text: article.text,
+          author: {
+            connect: {
+              id: authorId,
+            },
+          },
+          categories: {
+            connect: categories,
           },
         },
-        categories: {
-          connect: categories,
+        include: {
+          categories: true,
         },
-      },
-      include: {
-        categories: true,
-      },
-    });
+      });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === PrismaError.RecordDoesNotExist
+      ) {
+        throw new BadRequestException('Wrong category id provided');
+      }
+      throw error;
+    }
   }
 
   async update(id: number, article: UpdateArticleDto) {
