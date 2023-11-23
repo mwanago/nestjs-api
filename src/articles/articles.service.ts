@@ -101,4 +101,14 @@ export class ArticlesService {
       throw error;
     }
   }
+
+  deleteMultipleArticles(ids: number[]) {
+    return this.prismaService.article.deleteMany({
+      where: {
+        id: {
+          in: ids,
+        },
+      },
+    });
+  }
 }
