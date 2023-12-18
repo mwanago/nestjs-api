@@ -11,4 +11,9 @@ export class UpdateArticleDto {
   @IsNotEmpty()
   @CanBeUndefined()
   title?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @CanBeUndefined()
+  urlSlug: string;
 }
