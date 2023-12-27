@@ -40,13 +40,13 @@ export class UsersService {
 
   async create(user: UserDto) {
     try {
-      return this.prismaService.user.create({
+      return await this.prismaService.user.create({
         data: user,
       });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
-        error?.code === PrismaError.UniqueConstraintFailed
+        error?.code === PrismaError.UniqueConstraintViolated
       ) {
         throw new ConflictException('User with that email already exists');
       }

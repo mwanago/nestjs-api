@@ -3,6 +3,7 @@ import { ArticlesModule } from './articles/articles.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthenticationModule } from './authentication/authentication.module';
 import * as Joi from 'joi';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -16,5 +17,6 @@ import * as Joi from 'joi';
       }),
     }),
   ],
+  controllers: [AppController]
 })
 export class AppModule {}
