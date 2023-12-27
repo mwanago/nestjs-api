@@ -19,6 +19,6 @@ import { AppController } from './app.controller';
       }),
     }),
   ],
-  controllers: [AppController]
+  controllers: [AppController],
 })
 export class AppModule {}

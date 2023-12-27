@@ -56,14 +56,10 @@ export class ArticlesService {
       if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
         return error;
       }
-      if (
-        error.code === PrismaError.UniqueConstraintViolated
-      ) {
+      if (error.code === PrismaError.UniqueConstraintViolated) {
         throw new SlugNotUniqueException(article.urlSlug);
       }
-      if (
-        error.code === PrismaError.RecordDoesNotExist
-      ) {
+      if (error.code === PrismaError.RecordDoesNotExist) {
         throw new BadRequestException('Wrong category id provided');
       }
       throw error;
