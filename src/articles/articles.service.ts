@@ -5,6 +5,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaError } from '../database/prisma-error.enum';
 import { ArticleNotFoundException } from './article-not-found.exception';
 import { UpdateArticleDto } from './dto/update-article.dto';
+import { SlugNotUniqueException } from './slug-not-unique.exception';
 
 @Injectable()
 export class ArticlesService {
@@ -52,10 +53,13 @@ export class ArticlesService {
         },
       });
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === PrismaError.RecordDoesNotExist
-      ) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
+        return error;
+      }
+      if (error.code === PrismaError.UniqueConstraintViolated) {
+        throw new SlugNotUniqueException(article.urlSlug);
+      }
+      if (error.code === PrismaError.RecordDoesNotExist) {
         throw new BadRequestException('Wrong category id provided');
       }
       throw error;
@@ -74,11 +78,14 @@ export class ArticlesService {
         },
       });
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === PrismaError.RecordDoesNotExist
-      ) {
+      if (!(error instanceof Prisma.PrismaClientKnownRequestError)) {
+        throw error;
+      }
+      if (error.code === PrismaError.RecordDoesNotExist) {
         throw new ArticleNotFoundException(id);
+      }
+      if (error.code === PrismaError.UniqueConstraintViolated) {
+        throw new SlugNotUniqueException(article.urlSlug);
       }
       throw error;
     }

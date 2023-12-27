@@ -63,7 +63,7 @@ export class UsersService {
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
-        error?.code === PrismaError.UniqueConstraintFailed
+        error?.code === PrismaError.UniqueConstraintViolated
       ) {
         throw new ConflictException('User with that email already exists');
       }
