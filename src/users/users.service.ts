@@ -40,7 +40,7 @@ export class UsersService {
 
   async create(user: UserDto) {
     try {
-      return this.prismaService.user.create({
+      return await this.prismaService.user.create({
         data: user,
       });
     } catch (error) {
