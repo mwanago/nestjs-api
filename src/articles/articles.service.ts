@@ -39,6 +39,7 @@ export class ArticlesService {
         data: {
           title: article.title,
           text: article.text,
+          urlSlug: article.urlSlug,
           author: {
             connect: {
               id: authorId,
