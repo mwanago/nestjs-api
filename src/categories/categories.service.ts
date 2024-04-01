@@ -18,6 +18,9 @@ export class CategoriesService {
       where: {
         id,
       },
+      include: {
+        articles: true,
+      },
     });
     if (!category) {
       throw new NotFoundException();
@@ -70,5 +73,26 @@ export class CategoriesService {
       }
       throw error;
     }
+  }
+
+  async deleteCategoryWithArticles(categoryId: number) {
+    const category = await this.getById(categoryId);
+
+    const articleIds = category.articles.map((article) => article.id);
+
+    return this.prismaService.$transaction([
+      this.prismaService.article.deleteMany({
+        where: {
+          id: {
+            in: articleIds,
+          },
+        },
+      }),
+      this.prismaService.category.delete({
+        where: {
+          id: categoryId,
+        },
+      }),
+    ]);
   }
 }
