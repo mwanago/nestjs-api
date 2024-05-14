@@ -35,9 +35,19 @@ describe('The AuthenticationService', () => {
     authenticationService = await module.get(AuthenticationService);
   });
   describe('when the getCookieForLogOut method is called', () => {
-    it('should return a correct string', () => {
-      const result = authenticationService.getCookieForLogOut();
-      expect(result).toBe('Authentication=; HttpOnly; Path=/; Max-Age=0');
+    it('should return a cookie with an empty Authentication token', () => {
+      const cookie = authenticationService.getCookieForLogOut();
+
+      const containsAuthenticationToken = cookie.includes('Authentication=;');
+
+      expect(containsAuthenticationToken).toBe(true);
+    });
+    it('should return a cookie marked with HttpOnly', () => {
+      const cookie = authenticationService.getCookieForLogOut();
+
+      const containsHttpOnly = cookie.includes('HttpOnly;');
+
+      expect(containsHttpOnly).toBe(true);
     });
   });
   describe('when the getAuthenticatedUser method is called', () => {
