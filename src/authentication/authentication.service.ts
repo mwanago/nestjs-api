@@ -11,7 +11,6 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { LogInDto } from './dto/log-in.dto';
 import { TokenPayload } from './token-payload.interface';
-import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class AuthenticationService {
@@ -22,21 +21,14 @@ export class AuthenticationService {
   ) {}
 
   async signUp(signUpData: SignUpDto) {
-    try {
-      const hashedPassword = await bcrypt.hash(signUpData.password, 10);
-      return await this.usersService.create({
-        name: signUpData.name,
-        email: signUpData.email,
-        phoneNumber: signUpData.phoneNumber,
-        password: hashedPassword,
-        address: signUpData.address,
-      });
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientValidationError) {
-        throw new BadRequestException();
-      }
-      throw error;
-    }
+    const hashedPassword = await bcrypt.hash(signUpData.password, 10);
+    return await this.usersService.create({
+      name: signUpData.name,
+      email: signUpData.email,
+      phoneNumber: signUpData.phoneNumber,
+      password: hashedPassword,
+      address: signUpData.address,
+    });
   }
 
   private async verifyPassword(
