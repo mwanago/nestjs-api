@@ -1,16 +1,20 @@
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { PrismaService } from '../database/prisma.service';
 import { Category } from '@prisma/client';
 import * as request from 'supertest';
 import CategoriesController from './categories.controller';
 import { CategoriesService } from './categories.service';
+import { CreateCategoryDto } from './dto/create-category.dto';
+import { JwtAuthenticationGuard } from '../authentication/jwt-authentication.guard';
 
 describe('The CategoriesController', () => {
   let app: INestApplication;
   let findUniqueMock: jest.Mock;
+  let createMock: jest.Mock;
   beforeEach(async () => {
     findUniqueMock = jest.fn();
+    createMock = jest.fn();
     const module = await Test.createTestingModule({
       providers: [
         CategoriesService,
@@ -19,13 +23,26 @@ describe('The CategoriesController', () => {
           useValue: {
             category: {
               findUnique: findUniqueMock,
+              create: createMock,
             },
           },
         },
       ],
       controllers: [CategoriesController],
       imports: [],
-    }).compile();
+    })
+      .overrideGuard(JwtAuthenticationGuard)
+      .useValue({
+        canActivate: (context: ExecutionContext) => {
+          const req = context.switchToHttp().getRequest();
+          req.user = {
+            id: 1,
+            name: 'John Smith',
+          };
+          return true;
+        },
+      })
+      .compile();
 
     app = module.createNestApplication();
     await app.init();
@@ -54,6 +71,29 @@ describe('The CategoriesController', () => {
     describe('and the category with a given id does not exist', () => {
       it('should respond with the 404 status', () => {
         return request(app.getHttpServer()).get('/categories/2').expect(404);
+      });
+    });
+  });
+  describe('and the POST /categories endpoint is called', () => {
+    describe('and the correct data is provided', () => {
+      let categoryData: CreateCategoryDto;
+      beforeEach(() => {
+        categoryData = {
+          name: 'New category',
+        };
+        createMock.mockResolvedValue({
+          id: 2,
+          ...categoryData,
+        });
+      });
+      it('should respond with the new category', () => {
+        return request(app.getHttpServer())
+          .post('/categories')
+          .send(categoryData)
+          .expect({
+            id: 2,
+            ...categoryData,
+          });
       });
     });
   });
