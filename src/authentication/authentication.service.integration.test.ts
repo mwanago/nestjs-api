@@ -5,7 +5,9 @@ import { Test } from '@nestjs/testing';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../database/prisma.service';
 import { SignUpDto } from './dto/sign-up.dto';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
+import { PrismaError } from '../database/prisma-error.enum';
+import { ConflictException } from '@nestjs/common';
 
 jest.mock('bcrypt', () => ({
   hash: () => {
@@ -79,6 +81,21 @@ describe('The AuthenticationService', () => {
     it('should return the user as well', async () => {
       const result = await authenticationService.signUp(signUpData);
       expect(result).toBe(createdUser);
+    });
+  });
+  describe('when the PrismaService throws the UniqueConstraintViolated error', () => {
+    beforeEach(() => {
+      prismaCreateMock.mockRejectedValue(
+        new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+          code: PrismaError.UniqueConstraintViolated,
+          clientVersion: Prisma.prismaVersion.client,
+        }),
+      );
+    });
+    it('should throw the ConflictException', () => {
+      return expect(async () => {
+        await authenticationService.signUp(signUpData);
+      }).rejects.toThrow(ConflictException);
     });
   });
 });
