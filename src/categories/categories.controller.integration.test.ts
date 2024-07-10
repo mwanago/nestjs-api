@@ -8,9 +8,9 @@ import { CategoriesService } from './categories.service';
 
 describe('The CategoriesController', () => {
   let app: INestApplication;
-  let findManyMock: jest.Mock;
+  let findUniqueMock: jest.Mock;
   beforeEach(async () => {
-    findManyMock = jest.fn();
+    findUniqueMock = jest.fn();
     const module = await Test.createTestingModule({
       providers: [
         CategoriesService,
@@ -18,7 +18,7 @@ describe('The CategoriesController', () => {
           provide: PrismaService,
           useValue: {
             category: {
-              findMany: findManyMock,
+              findUnique: findUniqueMock,
             },
           },
         },
@@ -30,23 +30,21 @@ describe('The CategoriesController', () => {
     app = module.createNestApplication();
     await app.init();
   });
-  describe('when the GET /categories endpoint is called', () => {
-    let categories: Category[];
-    beforeEach(() => {
-      categories = [
-        {
+  describe('when the GET /categories/:id endpoint is called', () => {
+    describe('and the category with a given id exists', () => {
+      let category: Category;
+      beforeEach(() => {
+        category = {
           id: 1,
-          name: 'First category',
-        },
-        {
-          id: 1,
-          name: 'Second category',
-        },
-      ];
-      findManyMock.mockResolvedValue(categories);
-    });
-    it('should return all categories', () => {
-      return request(app.getHttpServer()).get('/categories').expect(categories);
+          name: 'My category',
+        };
+        findUniqueMock.mockResolvedValue(category);
+      });
+      it('should respond with the category', () => {
+        return request(app.getHttpServer())
+          .get('/categories/1')
+          .expect(category);
+      });
     });
   });
 });
