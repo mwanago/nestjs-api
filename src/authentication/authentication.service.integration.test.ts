@@ -5,6 +5,7 @@ import { Test } from '@nestjs/testing';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from '../database/prisma.service';
 import { SignUpDto } from './dto/sign-up.dto';
+import { User } from '@prisma/client';
 
 jest.mock('bcrypt', () => ({
   hash: () => {
@@ -62,6 +63,22 @@ describe('The AuthenticationService', () => {
           address: true,
         },
       });
+    });
+  });
+  describe('when the PrismaService returns a valid user', () => {
+    let createdUser: User;
+    beforeEach(() => {
+      createdUser = {
+        ...signUpData,
+        id: 1,
+        addressId: null,
+        phoneNumber: '123456789',
+      };
+      prismaCreateMock.mockResolvedValue(createdUser);
+    });
+    it('should return the user as well', async () => {
+      const result = await authenticationService.signUp(signUpData);
+      expect(result).toBe(createdUser);
     });
   });
 });
