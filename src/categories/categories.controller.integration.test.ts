@@ -31,19 +31,29 @@ describe('The CategoriesController', () => {
     await app.init();
   });
   describe('when the GET /categories/:id endpoint is called', () => {
-    describe('and the category with a given id exists', () => {
-      let category: Category;
-      beforeEach(() => {
-        category = {
-          id: 1,
-          name: 'My category',
-        };
-        findUniqueMock.mockResolvedValue(category);
+    let category: Category;
+    beforeEach(() => {
+      category = {
+        id: 1,
+        name: 'My category',
+      };
+      findUniqueMock.mockImplementation((args: { where: { id: number } }) => {
+        if (args.where.id === 1) {
+          return Promise.resolve(category);
+        }
+        return Promise.resolve(undefined);
       });
+    });
+    describe('and the category with a given id exists', () => {
       it('should respond with the category', () => {
         return request(app.getHttpServer())
           .get('/categories/1')
           .expect(category);
+      });
+    });
+    describe('and the category with a given id does not exist', () => {
+      it('should respond with the 404 status', () => {
+        return request(app.getHttpServer()).get('/categories/2').expect(404);
       });
     });
   });
